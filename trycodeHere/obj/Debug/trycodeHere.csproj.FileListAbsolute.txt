@@ -1,0 +1,11 @@
+c:\users\jason.liang\documents\visual studio 2012\Projects\trycodeHere\trycodeHere\bin\Debug\trycodeHere.exe.config
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\bin\Debug\trycodeHere.exe
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\bin\Debug\trycodeHere.pdb
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\obj\Debug\trycodeHere.csprojResolveAssemblyReference.cache
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\obj\Debug\trycodeHere.exe
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\obj\Debug\trycodeHere.pdb
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\bin\Debug\Newtonsoft.Json.dll
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\bin\Debug\Newtonsoft.Json.xml
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\bin\Debug\HtmlAgilityPack.dll
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\jason.liang\Documents\Visual Studio 2012\Projects\trycodeHere\trycodeHere\bin\Debug\HtmlAgilityPack.xml
