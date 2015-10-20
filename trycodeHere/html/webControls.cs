@@ -21,7 +21,8 @@ namespace trycodeHere.html
     [XmlInclude(typeof(iRow))]
     [XmlInclude(typeof(iCell))]
     public class iNode 
-    {     
+    {
+        public string nodeId;
         public string ControlType;
         public List<KeyValue> attrs;      
         public List<iNode> children;
@@ -56,7 +57,7 @@ namespace trycodeHere.html
 
        private void _import(iNode n, ref HtmlNode htmln)
        {
-           htmln.Id = "red";
+           //htmln.Id = "red";
            n.ControlType = htmln.Name;
            string[] AttributeName = new string[htmln.Attributes.Count];        
 
@@ -65,19 +66,30 @@ namespace trycodeHere.html
                HtmlAttribute at = htmln.Attributes[i];
                var d = new KeyValue();
                d.key = at.Name;
+               if (at.Value.Contains("spacer.gif")) at.Value = @"C:\Users\jason.liang\Downloads\spacer.gif";
                d.value = at.Value;
+
                n.attrs.Add(d);
            }
 
-           if (htmln.Descendants().Count() > 0)
+           if (htmln.ChildNodes.Count > 0)
            {
-               var list = htmln.Descendants().ToList();
-
+               var list = htmln.ChildNodes;
                for (int i = 0; i < list.Count;i++ )
                {
                    var v =list[i];
                    var name = v.Name;
-                   if (name.Contains("text") || name.Contains("td") || name.Contains("tr")) continue;
+                   if (name.Equals("#text")) 
+                   {
+                       if (v.InnerText != null && v.InnerText.Trim().Length > 0) 
+                       {
+                           var dd = new KeyValue();
+                           dd.key = "iText";
+                           dd.value = v.InnerText;
+                           n.attrs.Add(dd);   
+                       }                                        
+                       continue; 
+                   }
                    iNode nc = new iNode();
                    n.children.Add(nc);
                    _import(nc, ref v);
@@ -94,24 +106,73 @@ namespace trycodeHere.html
        }
 
        private string _render(iNode adpt)
-       { 
-            var tags = new System.Web.Mvc.TagBuilder(adpt.ControlType);
-            StringBuilder sb = new StringBuilder();
-            for (int i=0;i< adpt.children.Count ;i++)
-            {
-                string sss=_render(adpt.children[i]);
-                sb.Append(sss);
-            }
-            tags.InnerHtml = sb.ToString();
+       {
+           if (adpt.ControlType == null || adpt.ControlType.Length == 0)
+           {
+               StringBuilder sb = new StringBuilder();
+               for (int i = 0; i < adpt.children.Count; i++)
+               {
+                   string sss = _render(adpt.children[i]);
+                   sb.Append(sss);
+               }
+               return sb.ToString();
+           }
+           else if (adpt.ControlType.Contains("comment"))
+           {
+               return "";
+           }
+           else
+           {
+               var tags = new System.Web.Mvc.TagBuilder(adpt.ControlType);
+               StringBuilder sb = new StringBuilder();
+               for (int i = 0; i < adpt.children.Count; i++)
+               {
+                   string sss = _render(adpt.children[i]);
+                   sb.Append(sss);
+               }
+               tags.InnerHtml = sb.ToString();
 
-            foreach (var a in adpt.attrs)
-            {
-                tags.Attributes.Add(a.key,a.value);
-            }
-            string html = tags.ToString();
-            return html;
+               foreach (var a in adpt.attrs)
+               {
+                   if (a.key.Equals("iText"))
+                   {
+                      // tags.SetInnerText(a.value);
+                       tags.InnerHtml = a.value;
+                       continue;
+                   }
+                   if (a.key.Equals("#comment")) continue;
+
+                   tags.Attributes.Add(a.key, a.value);
+               }
+               string html = tags.ToString();
+               return html;
+           }
+
        }
 
+
+       public iNode findOneById(string sID)
+       {
+           return findone(this, sID);
+       }
+       private iNode findone(iNode root, string id)
+       {
+           for (int j = 0; j < root.attrs.Count; j++)
+           {
+               var ats = root.attrs[j];
+               if (ats.key.Equals("id"))
+                   if(ats.value.Equals(id))
+                       return root;
+           }
+
+           for (int i = 0; i < root.children.Count; i++)
+           {
+                var n = root.children[i];
+                var res = findone(n, id);
+                if (res != null) return res;
+           }
+           return null;
+       }
     }
 
     public class iCell : iNode    // td
@@ -294,31 +355,41 @@ namespace trycodeHere.html
             doc.LoadHtml(fileText);
 
            // HtmlNode specificNode = 
-            HtmlNodeCollection nodesMatchingXPath = doc.DocumentNode.SelectNodes("x/path/nodes");
+           // HtmlNodeCollection nodesMatchingXPath = doc.DocumentNode.SelectNodes("x/path/nodes");
 
-            var clo = doc.DocumentNode.Descendants().ToList();
+            var clo = doc.DocumentNode.ChildNodes;
             iNode root = new iNode();
-            root.ControlType = "label";
+           
             for (int i = 0; i < clo.Count;i++ )
             {
                 var v = clo[i];
                 string name = v.Name;
-                if (name.Contains("text") || name.Contains("td") || name.Contains("tr")) continue;
-                if (v.Id.Equals("red")) continue;
+                //if (name.Contains("text") || name.Contains("td") || name.Contains("tr")) continue;
+                if (name.Equals("#text") ) continue;
+                //if (v.Id.Equals("red")) continue;
                 iNode n = new iNode();
                 n.ControlType = name;
                 n.importFromHtmlNode(ref v);
                 root.children.Add(n);
             }
 
+            trycodeHere.XML.mySerializer.SerialtoXml(root, root.GetType());
+          
+            //var sn = root.findOneById("lblDearCust");
+            //sn.attrs.Add(new KeyValue{ key="onclick", value= "onclickme"});
             string s = root.renderHtml();
-           
+            trycodeHere.XML.mySerializer.WriteHtml(s);
+
 
         }
 
-        public static void test()
+        public static void test2()
         {
             Import();
+        }
+
+        public static void test()
+        {            
 
             var btn = new System.Web.UI.WebControls.Button();
             btn.Text = "click om me";
